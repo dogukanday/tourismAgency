@@ -1,0 +1,1 @@
+Henüz projeyi bitiremedim. Revizeye kalacak.
