@@ -1,14 +1,21 @@
 package view;
 
 import business.*;
+import core.ComboItem;
 import core.Helper;
 import entities.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserView extends Layout{
     private JPanel container;
@@ -29,6 +36,16 @@ public class UserView extends Layout{
     private JPanel pnl_book;
     private JTable tbl_book;
     private JScrollPane scrl_book;
+    private JPanel pnl_search;
+    private JComboBox cmb_hotel;
+    private JFormattedTextField fld_strt_date;
+    private JComboBox cmb_city;
+    private JLabel lbl_hotel;
+    private JLabel lbl_strt_date;
+    private JLabel lbl_city;
+    private JFormattedTextField fld_fnsh_date;
+    private JLabel lbl_fnsh_date;
+    private JButton btn_search;
     private Hotel hotel;
     private DefaultTableModel tmdl_hotel;
     private DefaultTableModel tmdl_pension;
@@ -82,9 +99,9 @@ public class UserView extends Layout{
             dispose();
         }
 
-        setHotelTable();
+        setHotelTable(null);
         setPensionTable();
-        setRoomstable();
+        setRoomstable(null);
         setSeasonTable();
         setBookTable();
         selectPension();
@@ -92,11 +109,15 @@ public class UserView extends Layout{
         selectHotel();
         selectSeasons();
         selectBooks();
+        hotelSearchCmb();
+
     }
 
-    public void setHotelTable(){
+    public void setHotelTable(ArrayList<Object[]> hotels){
         col_hotel = new Object[]{"ID", "Otel Adı", "Adres", "Telefon", "Email","Şehir", "İlçe", "Yıldız", "Park", "Havuz", "Wifi", "Spor Salonu", "Resepsiyon", "Spa", "Oda Servisi"};
-        ArrayList<Object[]> hotels = this.hotelManager.getForTable(col_hotel.length, this.hotelManager.findAll());
+        if (hotels == null){
+            hotels = this.hotelManager.getForTable(col_hotel.length, this.hotelManager.findAll());
+        }
         createTable(tmdl_hotel, tbl_hotel, col_hotel, hotels);
         tableRowSelected(tbl_hotel);
     }
@@ -108,9 +129,11 @@ public class UserView extends Layout{
         tableRowSelected(tbl_pension);
     }
 
-    public void setRoomstable(){
-        col_rooms = new Object[]{"ID", "Otel Adı", "Oda Adı", "Pansiyon Tipi", "Kişi Sayısı", "M2", "TV", "Mini Bar", "Konsol", "Kasa", "Projeksiyon", "Stok", "Yetişkin Fiyatı", "Çocuk Fiyatı", "Fiyat"};
-        ArrayList<Object[]> rooms = this.roomsManager.getForTable(col_rooms.length, this.roomsManager.findAll());
+    public void setRoomstable(ArrayList<Object[]> rooms){
+        col_rooms = new Object[]{"ID", "Otel Adı", "Otel Şehir", "Otel İlçe", "Otel Adres", "Otel Telefon", "Otel Yıldız", "Otel Park", "Otel Havuz", "Otel GYM", "Otel Resepsiyon", "Otel Oda Servisi", "Otel Spa", "Otel Wifi", "Oda Adı", "Pansiyon Tipi", "Kişi Sayısı", "M2", "TV", "Mini Bar", "Konsol", "Kasa", "Projeksiyon", "Stok", "Yetişkin Fiyatı", "Çocuk Fiyatı", "Fiyat"};
+        if (rooms == null){
+            rooms = this.roomsManager.getForTable(col_rooms.length, this.roomsManager.findAll());
+        }
         createTable(tmdl_rooms, tbl_rooms, col_rooms, rooms);
         tableRowSelected(tbl_rooms);
     }
@@ -144,7 +167,7 @@ public class UserView extends Layout{
                     @Override
                     public void windowClosed(WindowEvent e) {
                         setBookTable();
-                        setRoomstable();
+                        setRoomstable(null);
                     }
                 });
             }
@@ -157,7 +180,7 @@ public class UserView extends Layout{
                 @Override
                 public void windowClosed(WindowEvent e) {
                     setBookTable();
-                    setRoomstable();
+                    setRoomstable(null);
                 }
             });
         });
@@ -172,7 +195,7 @@ public class UserView extends Layout{
                 setBookTable();
                 int deletedRoom = roomsManager.findByID(booking.getRoom_id()).getRoomStock() + 1;
                 roomsManager.updateStock(booking.getRoom_id(),deletedRoom );
-                setRoomstable();
+                setRoomstable(null);
             }
         });
 
@@ -237,7 +260,7 @@ public class UserView extends Layout{
                 roomsEditView.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        setRoomstable();
+                        setRoomstable(null);
                     }
                 });
             }
@@ -249,7 +272,7 @@ public class UserView extends Layout{
             roomsEditView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    setRoomstable();
+                    setRoomstable(null);
                 }
             });
         });
@@ -260,7 +283,7 @@ public class UserView extends Layout{
                 Helper.showMessage("error");
             } else {
                 roomsManager.delete(selectedRow);
-                setRoomstable();
+                setRoomstable(null);
             }
         });
 
@@ -333,7 +356,7 @@ public class UserView extends Layout{
                 hotelEditView.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        setHotelTable();
+                        setHotelTable(null);
                     }
                 });
             }
@@ -346,7 +369,7 @@ public class UserView extends Layout{
             hotelEditView.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    setHotelTable();
+                    setHotelTable(null);
                 }
             });
         });
@@ -357,7 +380,16 @@ public class UserView extends Layout{
                 Helper.showMessage("error");
             }else{
                 hotelManager.delete(selectedRow);
-                setHotelTable();
+                setHotelTable(null);
+            }
+        });
+
+        btn_search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Rooms> rooms = roomsManager.searchRoom(fld_strt_date.getText(), fld_fnsh_date.getText(), (cmb_city.getSelectedItem()).toString(), (cmb_hotel.getSelectedItem()).toString());
+                ArrayList<Object[]> roomRow = roomsManager.getForSearchTable(col_hotel.length, rooms);
+                setRoomstable(roomRow);
             }
         });
 
@@ -365,6 +397,32 @@ public class UserView extends Layout{
 
     }
 
+    public void hotelSearchCmb(){
+        ArrayList<Hotel> hotels = hotelManager.findAll();
 
+
+
+        for (Hotel hotel : hotels){
+            cmb_hotel.addItem(new ComboItem(hotel.getId(), hotel.getHotelName()));
+        }
+
+        Set<String> addedCities = new HashSet<>();
+        for (Hotel hotel : hotels){
+            String city = hotel.getHotelCity();
+            if (!addedCities.contains(city)) {
+                cmb_city.addItem(new ComboItem(hotel.getId(), city));
+                addedCities.add(city);
+            }
+        }
+
+    }
+
+
+    private void createUIComponents() throws ParseException {
+        this.fld_strt_date = new JFormattedTextField(new MaskFormatter("##/##/####"));
+        this.fld_strt_date.setText("01/01/2024");
+        this.fld_fnsh_date = new JFormattedTextField(new MaskFormatter("##/##/####"));
+        this.fld_fnsh_date.setText("02/01/2024");
+    }
 
 }

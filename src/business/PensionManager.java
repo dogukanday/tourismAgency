@@ -10,12 +10,14 @@ public class PensionManager {
     private final PensionDao pensionDao;
     private final HotelDao hotelDao;
 
-
+    // Constructor
     public PensionManager(){
         this.pensionDao = new PensionDao();
         this.hotelDao = new HotelDao();
     }
 
+
+    // Methods
     public ArrayList<Pension> findAll(){
         return pensionDao.findAll();
     }
@@ -43,6 +45,8 @@ public class PensionManager {
         }
         return true;
     }
+
+    // Method to get the data for the table
 
     public ArrayList<Object[]> getForTable(int size, ArrayList<Pension> pensions){
         ArrayList<Object[]> pensionRow = new ArrayList<>();

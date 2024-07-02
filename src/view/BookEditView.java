@@ -10,6 +10,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.MaskFormatter;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -19,7 +20,7 @@ public class BookEditView extends Layout {
     private JLabel lbl_name;
     private JTextField fld_name;
     private JTextField fld_mpno;
-    private JFormattedTextField fld_checkin;
+    private JFormattedTextField fld_check_in;
     private JFormattedTextField fld_checkout;
     private JTextField fld_adult;
     private JTextField fld_child;
@@ -65,44 +66,17 @@ public class BookEditView extends Layout {
         cmbBoxItems();
 
         if (book.getId() != 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             fld_name.setText(book.getName());
             fld_mpno.setText(book.getMpno());
-            fld_checkin.setText(String.valueOf(book.getCheck_in()));
-            fld_checkout.setText(String.valueOf(book.getCheck_out()));
+            fld_check_in.setText(formatter.format(book.getCheck_in()));
+            fld_checkout.setText(formatter.format(book.getCheck_out()));
             fld_adult.setText(String.valueOf(book.getPerson()));
             fld_child.setText(String.valueOf(book.getChild()));
             fld_idno.setText(String.valueOf(book.getCustomer_id()));
             fld_price.setText(String.valueOf(book.getPrice()));
-            cmb_rooms.setSelectedItem(roomsManager.findByID(book.getRoom_id()).getRoomName() + " - " + hotelManager.findByID(roomsManager.findByID(book.getRoom_id()).getRoomOtelId()).getHotelName() + " - " + roomsManager.findByID(book.getRoom_id()).getRoomPrice() + " - " + roomsManager.findByID(book.getRoom_id()).getRoomPensionType());
+            setComboBoxSelectedById(cmb_rooms, book.getRoom_id());
         }
-
-
-        fld_adult.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updatePrice();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-
-            }
-
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updatePrice();
-            }
-
-            public void updatePrice() {
-                ComboItem selectedRoom = (ComboItem) cmb_rooms.getSelectedItem();
-                int person = Integer.parseInt(fld_adult.getText());
-                LocalDate start = LocalDate.parse(fld_checkin.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                LocalDate end = LocalDate.parse(fld_checkout.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                long days = ChronoUnit.DAYS.between(start, end);
-                fld_price.setText(String.valueOf((days * (roomsManager.findByID(selectedRoom.getKey()).getRoomPrice()) + (roomsManager.findByID(selectedRoom.getKey()).getRoomPersonPrice() * person))));
-            }
-        });
 
         fld_child.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -124,16 +98,21 @@ public class BookEditView extends Layout {
                 ComboItem selectedRoom = (ComboItem) cmb_rooms.getSelectedItem();
                 int person = Integer.parseInt(fld_adult.getText());
                 int child = Integer.parseInt(fld_child.getText());
-                LocalDate start = LocalDate.parse(fld_checkin.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate start = LocalDate.parse(fld_check_in.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 LocalDate end = LocalDate.parse(fld_checkout.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                int roomPrice = roomsManager.findByID(selectedRoom.getKey()).getRoomPrice();
+                int roomPersonPrice = roomsManager.findByID(selectedRoom.getKey()).getRoomPersonPrice() * person;
+                int roomChildPrice = roomsManager.findByID(selectedRoom.getKey()).getRoomChildPrice() * child;
                 long days = ChronoUnit.DAYS.between(start, end);
-                //Season seasonStartDate = seasonManager.findByID();
-//                if(start = season.getStartDate() && end = season.getEndDate(){
-//
-//                }
-                Season seasonDiscount = seasonManager.findByID(roomsManager.findByID(selectedRoom.getKey()).getRoomSeasonId());
-                season.getDiscount();
-                fld_price.setText(String.valueOf(days * (roomsManager.findByID(selectedRoom.getKey()).getRoomPrice()) + (roomsManager.findByID(selectedRoom.getKey()).getRoomPersonPrice() * person) + (roomsManager.findByID(selectedRoom.getKey()).getRoomChildPrice() * child)));
+                //System.out.println(days);
+                int day = (int) days;
+                //System.out.println(day);
+                //int seasonDiscount = seasonManager.findByHotelID(4).getDiscount();
+                //System.out.println(roomsManager.findByID(selectedRoom.getKey()).getRoomOtelId());
+                int price = (day * (roomPrice + roomPersonPrice + roomChildPrice));
+                //int discountprice = seasonDiscount / 100;
+                //int total = price * discountprice;
+                fld_price.setText(String.valueOf(price));
             }
         });
 
@@ -142,8 +121,9 @@ public class BookEditView extends Layout {
             ComboItem selectedRoom = (ComboItem) cmb_rooms.getSelectedItem();
             book.setName(fld_name.getText());
             book.setMpno(fld_mpno.getText());
-            book.setCheck_in(LocalDate.parse(fld_checkin.getText() , DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            book.setCheck_in(LocalDate.parse(fld_check_in.getText() , DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             book.setCheck_out(LocalDate.parse(fld_checkout.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            book.setHotel_id(hotelManager.findByID(roomsManager.findByID(selectedRoom.getKey()).getRoomOtelId()).getId());
             book.setPerson(Integer.parseInt(fld_adult.getText()));
             book.setChild(Integer.parseInt(fld_child.getText()));
             book.setCustomer_id(Integer.parseInt(fld_idno.getText()));
@@ -180,11 +160,19 @@ public class BookEditView extends Layout {
 
 
     private void createUIComponents() throws ParseException {
-        this.fld_checkin = new JFormattedTextField(new MaskFormatter("##/##/####"));
-        this.fld_checkin.setText("01/01/2024");
+        this.fld_check_in = new JFormattedTextField(new MaskFormatter("##/##/####"));
+        this.fld_check_in.setText("01/01/2024");
         this.fld_checkout = new JFormattedTextField(new MaskFormatter("##/##/####"));
         this.fld_checkout.setText("02/01/2024");
     }
 
+    public static void setComboBoxSelectedById(JComboBox<ComboItem> comboBox, Integer id) {
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            if (comboBox.getItemAt(i).getKey() == (id)) {
+                comboBox.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
 
 }

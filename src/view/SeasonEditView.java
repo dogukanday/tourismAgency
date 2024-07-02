@@ -23,6 +23,8 @@ public class SeasonEditView extends Layout{
     private JLabel lbl_strt_date;
     private JLabel lbl_fnsh_date;
     private JLabel lbl_hotel_name;
+    private JLabel lbl_discount;
+    private JTextField fld_discount;
     private Season season;
     private SeasonManager seasonManager;
     private Hotel hotel;
@@ -43,7 +45,9 @@ public class SeasonEditView extends Layout{
         if(season.getId()!=0){
             this.fld_strt_date.setText(String.valueOf(season.getStart_date()));
             this.fld_fnsh_date.setText(String.valueOf(season.getEnd_date()));
-            this.cmb_hotel_name.setSelectedItem(new ComboItem(season.getOtel_id(), hotelManager.findByID(season.getOtel_id()).getHotelName()));
+            this.fld_discount.setText(String.valueOf(season.getDiscount()));
+            setComboBoxSelectedById(cmb_hotel_name, season.getOtel_id());
+            //this.cmb_hotel_name.setSelectedItem(new ComboItem(season.getOtel_id(), hotelManager.findByID(season.getOtel_id()).getHotelName()));
         }
 
         this.btn_save.addActionListener(e -> {
@@ -51,7 +55,7 @@ public class SeasonEditView extends Layout{
                 Helper.showMessage("fill");
             }else{
                 boolean result = false;
-                season.setStart_date(LocalDate.parse(fld_strt_date.getText()));
+                season.setStart_date(LocalDate.parse(fld_strt_date.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 season.setEnd_date(LocalDate.parse(fld_fnsh_date.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                 ComboItem selectedHotel = (ComboItem) cmb_hotel_name.getSelectedItem();
                 season.setOtel_id(selectedHotel.getKey());
@@ -86,5 +90,14 @@ public class SeasonEditView extends Layout{
         this.fld_strt_date.setText("01/01/2024");
         this.fld_fnsh_date = new JFormattedTextField(new MaskFormatter("##/##/####"));
         this.fld_fnsh_date.setText("02/01/2024");
+    }
+
+    public static void setComboBoxSelectedById(JComboBox<ComboItem> comboBox, Integer id) {
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            if (comboBox.getItemAt(i).getKey() == (id)) {
+                comboBox.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 }

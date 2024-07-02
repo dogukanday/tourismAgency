@@ -23,7 +23,7 @@ public class PensionEditView extends Layout{
 
     public PensionEditView(Pension pension){
         this.add(container);
-        guiInit(1000, 500, "Pansiyon Yönetim");
+        guiInit(300, 500, "Pansiyon Yönetim");
         this.pensionManager = new PensionManager();
         this.pension = pension;
         this.hotelManager = new HotelManager();
@@ -38,7 +38,8 @@ public class PensionEditView extends Layout{
 
         if(pension.getId() != 0){
 
-            cmb_hotel.setSelectedItem(hotelManager.findByID(pension.getHotelId()).getHotelName());
+            //cmb_hotel.setSelectedItem(hotelManager.findByID(pension.getHotelId()).getHotelName());
+            setComboBoxSelectedById(cmb_hotel, pension.getHotelId());
 
             cmb_penson_type.setSelectedItem(pension.getType());
 
@@ -63,6 +64,15 @@ public class PensionEditView extends Layout{
             }
         });
 
+    }
+
+    public static void setComboBoxSelectedById(JComboBox<ComboItem> comboBox, Integer id) {
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            if (comboBox.getItemAt(i).getKey() == (id)) {
+                comboBox.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 
 

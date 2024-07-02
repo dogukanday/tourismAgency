@@ -61,7 +61,7 @@
           <text value="Giriş Tarihi :"/>
         </properties>
       </component>
-      <component id="47a85" class="javax.swing.JFormattedTextField" binding="fld_checkin" custom-create="true">
+      <component id="47a85" class="javax.swing.JFormattedTextField" binding="fld_check_in" custom-create="true">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>

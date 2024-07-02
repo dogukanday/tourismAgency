@@ -102,4 +102,20 @@ public class SeasonDao {
 
         return obj;
     }
+
+    public Season findByHotelId(int id){
+        Season obj = null;
+        String query = "SELECT * FROM public.season WHERE season_otel_id = ?";
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                obj = this.match(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
 }

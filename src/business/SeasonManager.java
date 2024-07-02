@@ -10,11 +10,12 @@ public class SeasonManager {
     private final SeasonDao seasonDao;
     private final HotelDao hotelDao;
 
+    // Constructor
     public SeasonManager() {
         this.seasonDao = new SeasonDao();
         this.hotelDao = new HotelDao();
     }
-
+    // Methods
     public boolean delete(int id) {
         return this.seasonDao.delete(id);
     }
@@ -35,6 +36,7 @@ public class SeasonManager {
         return this.seasonDao.findByID(id);
     }
 
+    // This method is used to get the data for the table
     public ArrayList<Object[]> getForTable(int size, ArrayList<Season> seasons) {
         ArrayList<Object[]> seasonRow = new ArrayList<>();
         for (Season season : seasons) {
@@ -48,5 +50,9 @@ public class SeasonManager {
             seasonRow.add(row);
         }
         return seasonRow;
+    }
+
+    public Season findByHotelID(int id) {
+        return this.seasonDao.findByHotelId(id);
     }
 }

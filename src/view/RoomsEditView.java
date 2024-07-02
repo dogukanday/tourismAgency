@@ -42,7 +42,7 @@ public class RoomsEditView extends Layout {
 
     public RoomsEditView(Rooms rooms) {
         this.add(container);
-        guiInit(300, 730, "Oda Düzenle / Ekle");
+        guiInit(300, 800, "Oda Düzenle / Ekle");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.roomsManager = new RoomsManager();
         this.rooms = new Rooms();
@@ -66,6 +66,7 @@ public class RoomsEditView extends Layout {
             this.cmb_console.setSelectedItem(rooms.isRoomConsole());
             this.cmb_safe.setSelectedItem(rooms.isRoomSafe());
             this.cmb_project.setSelectedItem(rooms.isRoomProject());
+            setComboBoxSelectedById(cmb_hotel_name, rooms.getRoomOtelId());
             this.cmb_hotel_name.setSelectedItem(hotelManager.findByID(rooms.getRoomOtelId()).getHotelName());
             this.cmb_pension_type.setSelectedItem(rooms.getRoomPensionType());
         }
@@ -115,16 +116,25 @@ public class RoomsEditView extends Layout {
 
         cmb_pension_type.setModel(new DefaultComboBoxModel<>(Pension.Pensions.values()));
 
-        cmb_console.addItem("true");
-        cmb_console.addItem("false");
-        cmb_mini.addItem("true");
-        cmb_mini.addItem("false");
-        cmb_project.addItem("true");
-        cmb_project.addItem("false");
-        cmb_safe.addItem("true");
-        cmb_safe.addItem("false");
-        cmb_tv.addItem("true");
-        cmb_tv.addItem("false");
+        cmb_console.addItem(Boolean.TRUE);
+        cmb_console.addItem(Boolean.FALSE);
+        cmb_mini.addItem(Boolean.TRUE);
+        cmb_mini.addItem(Boolean.FALSE);
+        cmb_project.addItem(Boolean.TRUE);
+        cmb_project.addItem(Boolean.FALSE);
+        cmb_safe.addItem(Boolean.TRUE);
+        cmb_safe.addItem(Boolean.FALSE);
+        cmb_tv.addItem(Boolean.TRUE);
+        cmb_tv.addItem(Boolean.FALSE);
+    }
+
+    public static void setComboBoxSelectedById(JComboBox<ComboItem> comboBox, Integer id) {
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            if (comboBox.getItemAt(i).getKey() == (id)) {
+                comboBox.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 
 

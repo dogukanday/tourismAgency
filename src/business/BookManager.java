@@ -10,12 +10,16 @@ public class BookManager {
     private final RoomsManager roomsManager;
     private final HotelManager hotelManager;
 
+
+    // Constructor
     public BookManager(){
         this.bookDao = new BookDao();
         this.roomsManager = new RoomsManager();
         this.hotelManager = new HotelManager();
 
     }
+
+    // Methods
 
     public ArrayList<Book> findAll(){
         return bookDao.findAll();
@@ -48,6 +52,8 @@ public class BookManager {
         return true;
     }
 
+
+    // Table for Booking
     public ArrayList<Object[]> getForTable(int size, ArrayList<Book> books){
         ArrayList<Object[]> bookRow = new ArrayList<>();
         for (Book book : books){

@@ -14,6 +14,7 @@ public class Book {
     private int child;
     private int price;
     private String status;
+    private int hotel_id;
 
     public Book(int id, int room_id, int customer_id, LocalDate check_in, LocalDate check_out, int person, int child, String name, String mpno, int price, String status) {
         this.id = id;
@@ -31,6 +32,14 @@ public class Book {
 
     public Book() {
 
+    }
+
+    public int getHotel_id() {
+        return hotel_id;
+    }
+
+    public void setHotel_id(int hotel_id) {
+        this.hotel_id = hotel_id;
     }
 
     public String getName() {

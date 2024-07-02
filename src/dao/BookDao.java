@@ -45,7 +45,7 @@ public class BookDao {
     }
 
     public boolean save(Book obj){
-        String query = "INSERT INTO public.reservation (reservation_room_id, reservation_id_no, reservation_name, reservation_mpno, reservation_strt_date, reservation_fnsh_date, reservation_adult_number, reservation_child_number, reservation_price, reservation_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO public.reservation (reservation_room_id, reservation_id_no, reservation_name, reservation_mpno, reservation_strt_date, reservation_fnsh_date, reservation_adult_number, reservation_child_number, reservation_price, reservation_hotel_id, reservation_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setInt(1, obj.getRoom_id());
@@ -57,7 +57,8 @@ public class BookDao {
             ps.setInt(7, obj.getPerson());
             ps.setInt(8, obj.getChild());
             ps.setInt(9, obj.getPrice());
-            ps.setString(10, obj.getStatus());
+            ps.setInt(10,obj.getHotel_id());
+            ps.setString(11, obj.getStatus());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +67,7 @@ public class BookDao {
     }
 
     public boolean update(Book obj){
-        String query = "UPDATE public.reservation SET reservation_room_id = ?, reservation_id_no = ?, reservation_name = ?, reservation_mpno = ?, reservation_strt_date = ?, reservation_fnsh_date = ?, reservation_adult_number = ?, reservation_child_number = ?, reservation_price = ?, reservation_status = ? WHERE reservation_id = ?";
+        String query = "UPDATE public.reservation SET reservation_room_id = ?, reservation_id_no = ?, reservation_name = ?, reservation_mpno = ?, reservation_strt_date = ?, reservation_fnsh_date = ?, reservation_adult_number = ?, reservation_child_number = ?, reservation_price = ?, reservation_status = ?, reservation_hotel_id = ? WHERE reservation_id = ?";
         try {
             PreparedStatement ps = this.conn.prepareStatement(query);
             ps.setInt(1, obj.getRoom_id());
@@ -80,6 +81,7 @@ public class BookDao {
             ps.setInt(9, obj.getPrice());
             ps.setString(10, obj.getStatus());
             ps.setInt(11, obj.getId());
+            ps.setInt(12, obj.getHotel_id());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,6 +117,22 @@ public class BookDao {
         return list;
     }
 
+    public ArrayList<Book> selectQuery(String query){
+        ArrayList<Book> list = new ArrayList<Book>();
+        try {
+            PreparedStatement ps = this.conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                list.add(this.match(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+
     public Book match(ResultSet rs) throws SQLException {
         Book obj = new Book();
 
@@ -129,6 +147,7 @@ public class BookDao {
         obj.setChild(rs.getInt("reservation_child_number"));
         obj.setPrice(rs.getInt("reservation_price"));
         obj.setStatus(rs.getString("reservation_status"));
+        obj.setHotel_id(rs.getInt("reservation_hotel_id"));
 
         return obj;
     }
