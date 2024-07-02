@@ -29,8 +29,6 @@ public class HotelDao {
             ResultSet rs = ps.executeQuery();
             if (rs.next()){
                 obj = this.match(rs);
-            }else {
-                System.out.println("No hotel found with id: " + id);
             }
         } catch (SQLException e) {
             e.printStackTrace();

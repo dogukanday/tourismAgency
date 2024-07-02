@@ -10,11 +10,11 @@ public class App {
 
         Connection conn = Db.getInstance();
 
-        //LoginView loginView = new LoginView();
+        LoginView loginView = new LoginView();
 
         UserManager userManager = new UserManager();
 
-        UserView userView = new UserView(userManager.findByLogin("user", "1234"));
+        //UserView userView = new UserView(userManager.findByLogin("user", "1234"));
 
     }
 }
